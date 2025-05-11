@@ -1,14 +1,13 @@
 streamlit==1.32.0
-pandas==2.1.0
+pandas==2.0.3
 numpy==1.26.0
 plotly==5.18.0
 requests==2.31.0
 selenium==4.15.2
 webdriver-manager==4.0.1
 python-dotenv==1.0.0
-
 statsmodels==0.14.1
 
-# Optional utilities that might be helpful for scraping
+# Optional utilities for scraping
 beautifulsoup4==4.12.3
 fake-useragent==1.5.1
