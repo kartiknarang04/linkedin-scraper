@@ -34,7 +34,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 class LinkedInScraper:
-    def setup_driver(headless=True):
+    def setup_driver(self,headless=True):
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--no-sandbox")
