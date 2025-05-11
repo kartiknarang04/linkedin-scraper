@@ -3,10 +3,11 @@ streamlit==1.31.1
 selenium==4.23.1
 webdriver-manager==4.0.2
 
-# Common useful packages
+# Data handling and visualization
 pandas==1.5.3
 numpy==1.26.4
 requests==2.32.3
+plotly==5.18.0
 
 # Optional utilities that might be helpful for scraping
 beautifulsoup4==4.12.3
