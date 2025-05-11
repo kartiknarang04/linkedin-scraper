@@ -35,20 +35,37 @@ logger = logging.getLogger(__name__)
 
 class LinkedInScraper:
     def setup_driver(self, headless=True):
+        # Set up Chrome options
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument("--headless=new")
+        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--window-size=1920,1080")
-
-        # Install driver
-        driver_dir = os.path.dirname(ChromeDriverManager().install())
-        driver_path = os.path.join(driver_dir, "chromedriver")  # Ensure correct binary
-
-        os.chmod(driver_path, 0o755)  # Make sure it's executable
+        
+        # Get cookies from environment variable
+        cookies_json = os.getenv("LINKEDIN_COOKIES")
+        if cookies_json:
+            cookies = json.loads(cookies_json)
+        else:
+            # Or load from secret file (if uploaded as a secret)
+            with open("/etc/secrets/linkedin_cookies.json", "r") as file:
+                cookies = json.load(file)
+        
+        # Initialize ChromeDriver
+        driver_path = ChromeDriverManager().install()
         service = Service(driver_path)
         driver = webdriver.Chrome(service=service, options=chrome_options)
+        
+        # Load LinkedIn login page (or any page you need)
+        driver.get("https://www.linkedin.com")
+        
+        # Inject cookies into the browser session
+        for cookie in cookies:
+            driver.add_cookie(cookie)
+        
+        driver.get("https://www.linkedin.com/feed/")  # Or any page you want to scrape
+        
         return driver
 
     def __init__(self, headless=False, debug=True, max_posts=5):
