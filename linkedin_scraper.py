@@ -34,16 +34,19 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 class LinkedInScraper:
-    def setup_driver(self,headless=True):
+    def setup_driver(self, headless=True):
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--window-size=1920,1080")
-    
-        driver_path = ChromeDriverManager().install()
-        os.chmod(driver_path, 0o755)  # ensure it's executable
+
+        # Install driver
+        driver_dir = os.path.dirname(ChromeDriverManager().install())
+        driver_path = os.path.join(driver_dir, "chromedriver")  # Ensure correct binary
+
+        os.chmod(driver_path, 0o755)  # Make sure it's executable
         service = Service(driver_path)
         driver = webdriver.Chrome(service=service, options=chrome_options)
         return driver
