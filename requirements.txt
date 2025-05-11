@@ -1,13 +1,13 @@
-# Core packages for your scraper
-streamlit==1.31.1
-selenium==4.23.1
-webdriver-manager==4.0.2
-
-# Data handling and visualization
-pandas==1.5.3
-numpy==1.26.4
-requests==2.32.3
+streamlit==1.32.0
+pandas==2.1.0
+numpy==1.26.0
 plotly==5.18.0
+requests==2.31.0
+selenium==4.15.2
+webdriver-manager==4.0.1
+python-dotenv==1.0.0
+
+statsmodels==0.14.1
 
 # Optional utilities that might be helpful for scraping
 beautifulsoup4==4.12.3

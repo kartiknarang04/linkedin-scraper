@@ -39,13 +39,6 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install ChromeDriver 136
-RUN wget -q https://storage.googleapis.com/chrome-for-testing-public/136.0.6099.0/linux64/chromedriver-linux64.zip \
-    && unzip chromedriver-linux64.zip \
-    && mv chromedriver-linux64/chromedriver /usr/bin/chromedriver \
-    && chmod +x /usr/bin/chromedriver \
-    && rm -rf chromedriver-linux64.zip chromedriver-linux64
-
 # Copy requirements file
 COPY requirements.txt .
 
@@ -62,8 +55,7 @@ RUN mkdir -p data
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     SELENIUM_HEADLESS=1 \
-    CHROME_BIN=/usr/bin/google-chrome \
-    CHROMEDRIVER_PATH=/usr/bin/chromedriver
+    CHROME_BIN=/usr/bin/google-chrome
 
 # Expose port for Streamlit
 EXPOSE 8501

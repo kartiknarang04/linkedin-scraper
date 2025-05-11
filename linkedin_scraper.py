@@ -26,20 +26,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-
-def get_driver():
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.binary_location = os.environ.get("CHROME_BIN", "/usr/bin/google-chrome")
-    # For Streamlit Cloud
-    driver = webdriver.Chrome(
-        service=Service(ChromeDriverManager().install()), 
-        options=chrome_options
-    )
-    return driver
 # Load environment variables
 load_dotenv()
 
@@ -48,6 +34,27 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 class LinkedInScraper:
+    def setup_driver(self, headless=True):
+        """Set up the Chrome driver with appropriate options for Docker environment."""
+        chrome_options = webdriver.ChromeOptions()
+        
+        # Add Docker-specific options
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--window-size=1920,1080")
+        
+        # Set binary location if specified in environment
+        chrome_binary = os.environ.get("CHROME_BIN")
+        if chrome_binary:
+            chrome_options.binary_location = chrome_binary
+        
+        # Use webdriver_manager to handle ChromeDriver installation
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+        
+        return driver
     def __init__(self, headless=False, debug=True, max_posts=5):
         """Initialize the LinkedIn scraper with login credentials."""
         self.email = os.getenv("LINKEDIN_EMAIL")
