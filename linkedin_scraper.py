@@ -22,6 +22,24 @@ import json
 import requests
 from uuid import uuid4
 
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+
+def get_driver():
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
+    
+    # For Streamlit Cloud
+    driver = webdriver.Chrome(
+        service=Service(ChromeDriverManager().install()), 
+        options=chrome_options
+    )
+    return driver
 # Load environment variables
 load_dotenv()
 
@@ -56,7 +74,7 @@ class LinkedInScraper:
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
         
         # Initialize the driver
-        self.driver = webdriver.Chrome(options=options)
+        self.driver = get_driver()
         self.wait = WebDriverWait(self.driver, 15)
         self.logged_in = False
         
