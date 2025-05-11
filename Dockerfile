@@ -1,51 +1,72 @@
-# Use an Ubuntu-based image
-FROM ubuntu:20.04
+# Use Python 3.10 as base image
+FROM python:3.10-slim
 
-# Set environment variables to non-interactive (to avoid prompts during apt-get)
-ENV DEBIAN_FRONTEND=noninteractive
+# Set working directory
+WORKDIR /app
 
-# Install dependencies and clean up to reduce image size
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     wget \
-    curl \
-    unzip \
     gnupg \
-    libnss3 \
-    libxss1 \
-    libappindicator1 \
-    libindicator7 \
+    unzip \
     fonts-liberation \
-    xdg-utils \
-    libatk-bridge2.0-0 \
-    libgtk-3-0 \
     libasound2 \
-    libxshmfence-dev \
-    libgbm-dev \
-    # Install xvfb and other utilities to support headless Chrome
-    xvfb \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libatspi2.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libwayland-client0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxkbcommon0 \
+    libxrandr2 \
+    xdg-utils \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Set the ChromeDriver version
-ENV CHROME_DRIVER_VERSION=125.0.6422.141
-
-# Install ChromeDriver
-RUN wget -O chromedriver.zip https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${CHROME_DRIVER_VERSION}/linux64/chromedriver-linux64.zip && \
-    unzip chromedriver.zip && \
-    mv chromedriver-linux64/chromedriver /usr/bin/chromedriver && \
-    chmod +x /usr/bin/chromedriver && \
-    rm -rf chromedriver.zip chromedriver-linux64
-
 # Install Google Chrome
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
-    dpkg -i google-chrome-stable_current_amd64.deb || apt-get --fix-broken install -y && \
-    rm google-chrome-stable_current_amd64.deb
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set up Chrome environment variables
-ENV CHROME_BIN=/usr/bin/google-chrome-stable
-ENV CHROME_DRIVER=/usr/bin/chromedriver
+# Install ChromeDriver 136
+RUN wget -q https://storage.googleapis.com/chrome-for-testing-public/136.0.6099.0/linux64/chromedriver-linux64.zip \
+    && unzip chromedriver-linux64.zip \
+    && mv chromedriver-linux64/chromedriver /usr/bin/chromedriver \
+    && chmod +x /usr/bin/chromedriver \
+    && rm -rf chromedriver-linux64.zip chromedriver-linux64
 
-# Clean up unnecessary packages to reduce Docker image size
-RUN apt-get autoremove -y && apt-get clean
+# Copy requirements file
+COPY requirements.txt .
 
-# Start xvfb to allow headless Chrome to run in the background
-CMD ["xvfb-run", "--auto-servernum", "--server-args='-screen 0, 1024x768x24'", "google-chrome-stable", "--no-sandbox", "--headless"]
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Create data directory
+RUN mkdir -p data
+
+# Set environment variables for Chrome
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    SELENIUM_HEADLESS=1 \
+    CHROME_BIN=/usr/bin/google-chrome \
+    CHROMEDRIVER_PATH=/usr/bin/chromedriver
+
+# Expose port for Streamlit
+EXPOSE 8501
+
+# Command to run the application
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
