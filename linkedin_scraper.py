@@ -34,33 +34,20 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 class LinkedInScraper:
-    def setup_driver(self, headless=True):
+    def setup_driver(headless=True):
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--window-size=1920,1080")
-        
-        chrome_binary = os.environ.get("CHROME_BIN")
-        if chrome_binary:
-            chrome_options.binary_location = chrome_binary
     
-        # Get actual path to chromedriver binary
         driver_path = ChromeDriverManager().install()
-        if "chromedriver" not in driver_path:
-            raise RuntimeError(f"Invalid ChromeDriver path: {driver_path}")
-        
-        # Ensure we're not pointing to the wrong file like THIRD_PARTY_NOTICES
-        if not driver_path.endswith("chromedriver"):
-            driver_path = os.path.join(os.path.dirname(driver_path), "chromedriver")
-    
+        os.chmod(driver_path, 0o755)  # ensure it's executable
         service = Service(driver_path)
         driver = webdriver.Chrome(service=service, options=chrome_options)
-    
         return driver
-        
-        return driver
+
     def __init__(self, headless=False, debug=True, max_posts=5):
         """Initialize the LinkedIn scraper with login credentials."""
         self.email = os.getenv("LINKEDIN_EMAIL")
