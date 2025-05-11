@@ -1,7 +1,8 @@
 FROM python:3.9-slim
 
 # Install basic dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     wget \
     curl \
     unzip \
@@ -9,15 +10,15 @@ RUN apt-get update && apt-get install -y \
     libnss3 \
     libxss1 \
     libappindicator1 \
-    libindicator7 \
-    fonts-liberation \
-    xdg-utils \
     libatk-bridge2.0-0 \
     libgtk-3-0 \
     libasound2 \
     libxshmfence-dev \
     libgbm-dev \
+    fonts-liberation \
+    xdg-utils \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Install Chrome v136
 RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
@@ -34,7 +35,7 @@ RUN CHROME_DRIVER_VERSION=$(curl -sS https://googlechromelabs.github.io/chrome-f
     rm -rf chromedriver.zip chromedriver-linux64
 
 # Set environment variables for Chrome
-ENV CHROME_BIN=/usr/bin/google-chrome
+ENV CHROME_BIN=/usr/bin/google-chrome 
 ENV PATH=$PATH:/usr/bin/chromedriver
 
 # Set working directory
