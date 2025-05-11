@@ -24,8 +24,8 @@ from uuid import uuid4
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 # Load environment variables
 load_dotenv()
 
@@ -35,24 +35,30 @@ logger = logging.getLogger(__name__)
 
 class LinkedInScraper:
     def setup_driver(self, headless=True):
-        """Set up the Chrome driver with appropriate options for Docker environment."""
         chrome_options = webdriver.ChromeOptions()
-        
-        # Add Docker-specific options
-        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--window-size=1920,1080")
         
-        # Set binary location if specified in environment
         chrome_binary = os.environ.get("CHROME_BIN")
         if chrome_binary:
             chrome_options.binary_location = chrome_binary
+    
+        # Get actual path to chromedriver binary
+        driver_path = ChromeDriverManager().install()
+        if "chromedriver" not in driver_path:
+            raise RuntimeError(f"Invalid ChromeDriver path: {driver_path}")
         
-        # Use webdriver_manager to handle ChromeDriver installation
-        service = Service(ChromeDriverManager().install())
+        # Ensure we're not pointing to the wrong file like THIRD_PARTY_NOTICES
+        if not driver_path.endswith("chromedriver"):
+            driver_path = os.path.join(os.path.dirname(driver_path), "chromedriver")
+    
+        service = Service(driver_path)
         driver = webdriver.Chrome(service=service, options=chrome_options)
+    
+        return driver
         
         return driver
     def __init__(self, headless=False, debug=True, max_posts=5):
