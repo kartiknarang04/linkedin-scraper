@@ -21,6 +21,8 @@ RUN apt-get update && apt-get install -y \
     libasound2 \
     libxshmfence-dev \
     libgbm-dev \
+    # Install xvfb and other utilities to support headless Chrome
+    xvfb \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the ChromeDriver version
@@ -45,5 +47,5 @@ ENV CHROME_DRIVER=/usr/bin/chromedriver
 # Clean up unnecessary packages to reduce Docker image size
 RUN apt-get autoremove -y && apt-get clean
 
-# Set the default command (in case you want to run Chrome or ChromeDriver directly)
-CMD ["google-chrome-stable", "--no-sandbox"]
+# Start xvfb to allow headless Chrome to run in the background
+CMD ["xvfb-run", "--auto-servernum", "--server-args='-screen 0, 1024x768x24'", "google-chrome-stable", "--no-sandbox", "--headless"]
