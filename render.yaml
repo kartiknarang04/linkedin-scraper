@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: streamlit-scraper-app
+    env: python
+    buildCommand: ./build.sh
+    startCommand: streamlit run app.py
+    envVars:
+      - key: LINKEDIN_EMAIL
+        value: your_email@example.com
+      - key: LINKEDIN_PASSWORD
+        value: your_password
+      - key: GROQ_API_KEY
+        value: your_groq_key
