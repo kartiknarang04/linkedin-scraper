@@ -80,13 +80,13 @@ Perfect for creators, consultants, or brand managers working with individuals.
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/linkedin-content-analyzer.git
-   cd linkedin-content-analyzer
+   git clone https://github.com/kartiknarang04/linkedin-scraper.git
+   cd linkedin-scraper
 2. **Create a .env file in the root directory and add the following**
    ```bash
-   linkedin_email=your_email@example.com
-   linkedin_password=your_password
-   groq_api_key=your_groq_api_key
+   LINKEDIN_EMAIL=your_email@example.com
+   LINKEDIN_PASSWORD=your_password
+   GROQ_API_KEY=your_groq_api_key
 3. **Run the app**
    ```bash
    streamlit run app.py
