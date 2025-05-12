@@ -24,8 +24,8 @@ from uuid import uuid4
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 # Load environment variables
 load_dotenv()
 
@@ -34,30 +34,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 class LinkedInScraper:
-    def setup_driver(self, headless=True):
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--window-size=1920,1080")
-        
-        # Clean up existing ChromeDriver if necessary
-        driver_dir = '/root/.wdm/drivers/chromedriver/linux64/'
-        if os.path.exists(driver_dir):
-            shutil.rmtree(driver_dir)  # Delete the old ChromeDriver
-        
-        # Install the correct ChromeDriver for Render's environment
-        driver_path = ChromeDriverManager().install()
-
-        # Ensure proper permissions on the driver
-        os.chmod(driver_path, 0o755)
-        
-        service = Service(driver_path)
-        driver = webdriver.Chrome(service=service, options=chrome_options)
-        
-        return driver
-
     def __init__(self, headless=False, debug=True, max_posts=5):
         """Initialize the LinkedIn scraper with login credentials."""
         self.email = os.getenv("LINKEDIN_EMAIL")
@@ -84,15 +60,9 @@ class LinkedInScraper:
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
         
         # Initialize the driver
-        self.driver =self.setup_driver(headless=headless)
+        self.driver = webdriver.Chrome(options=options)
         self.wait = WebDriverWait(self.driver, 15)
         self.logged_in = False
-        
-        # Take screenshot on initialization to verify browser is working
-        if self.debug:
-            self.driver.get("https://www.google.com")
-            time.sleep(2)
-            self.driver.save_screenshot(f'debug/{self.session_id}_browser_init.png')
     
     def login(self):
         """Log in to LinkedIn."""
