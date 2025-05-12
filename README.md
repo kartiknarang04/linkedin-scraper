@@ -1,8 +1,7 @@
-# LinkedIn Content Analyzer
+LinkedIn Content Analyzer
+A powerful tool to analyze and generate LinkedIn content tailored to individual profiles.
 
-A streamlined tool for analyzing and generating LinkedIn content — **tailored for specific profiles**.
-
-This application helps you understand what content works best for a particular LinkedIn user, when to post for maximum engagement, and even generate content in their unique voice based on historical data. Whether you're building a personal brand or optimizing a client's profile, this tool provides deep, data-driven insights and content recommendations.
+This application helps you uncover what content performs best for a specific LinkedIn user, determine the optimal posting times, and even generate posts in their unique tone and voice. Whether you're growing your own personal brand or optimizing a client’s content strategy, this tool delivers data-driven insights and personalized recommendations.
 
 📎 [**Demo Video**](https://drive.google.com/file/d/10iJ4H6wCFZ_-wyjJBS37e1QpMxN8zaIk/view?usp=sharing)
 
@@ -82,6 +81,7 @@ Perfect for creators, consultants, or brand managers working with individuals.
    ```bash
    git clone https://github.com/kartiknarang04/linkedin-scraper.git
    cd linkedin-scraper
+   pip install -r requirements.txt
 2. **Create a .env file in the root directory and add the following**
    ```bash
    LINKEDIN_EMAIL=your_email@example.com
